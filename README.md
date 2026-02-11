@@ -15,11 +15,16 @@ Perfect for:
 ## Installation
 
 ```bash
-# Install globally with uv
-uv tool install csv2yaml
+# Install globally from GitHub with uv
+uv tool install git+https://github.com/HeinrichHartmann/csv2yaml.git
 
 # Or install in project
-uv add csv2yaml
+uv add git+https://github.com/HeinrichHartmann/csv2yaml.git
+
+# Alternative: Clone and install locally
+git clone https://github.com/HeinrichHartmann/csv2yaml.git
+cd csv2yaml
+uv tool install .
 ```
 
 ## Quick Start
@@ -127,7 +132,7 @@ See [docs/ADR-001](docs/ADR-001-multi-dimensional-tsv-to-yaml.md) for architectu
 
 ```bash
 # Setup development environment
-git clone <repo>
+git clone https://github.com/HeinrichHartmann/csv2yaml.git
 cd csv2yaml
 uv sync --dev
 

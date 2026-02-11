@@ -1,6 +1,6 @@
 # csv2yaml project Makefile
 
-.PHONY: help install install-dev test test-verbose test-coverage lint format clean build publish
+.PHONY: help install install-dev install-github test test-verbose test-coverage lint format clean build publish publish-github
 
 help:				## Show this help message
 	@echo "csv2yaml - Universal TSV/CSV to YAML converter"
@@ -8,8 +8,11 @@ help:				## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
-install:			## Install package for production use
+install:			## Install package locally for production use
 	uv tool install .
+
+install-github:			## Install package from GitHub
+	uv tool install git+https://github.com/HeinrichHartmann/csv2yaml.git
 
 install-dev:			## Install package for development
 	uv sync --dev
@@ -50,6 +53,9 @@ publish-test:			## Publish to TestPyPI
 
 publish:			## Publish to PyPI
 	uv publish
+
+publish-github:			## Push to GitHub repository
+	git push origin main
 
 # Development workflow commands
 dev-setup: install-dev		## Setup development environment
