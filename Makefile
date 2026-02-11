@@ -14,11 +14,12 @@ clean:				## Clean up temporary files
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	rm -rf build/ dist/ .coverage htmlcov/ .pytest_cache/ .mypy_cache/
 
-install:			## Install package from GitHub
-	uv tool install git+https://github.com/HeinrichHartmann/csv2yaml.git
+install:			## Install package locally
+	uv tool install .
 
 test:				## Run test suite
 	uv run pytest
 
-publish:			## Push to GitHub repository
-	git push origin main
+publish:			## Publish package to PyPI
+	uv build
+	uv publish
