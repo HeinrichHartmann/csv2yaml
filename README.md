@@ -156,16 +156,22 @@ make install
 ### Publishing Releases
 
 ```bash
-# Build wheel and get release instructions
-make release
+# Automated release with gh CLI (recommended)
+make gh-release              # Builds, tags, and creates GitHub release automatically
 
-# Or manually:
-make build                    # Creates dist/ with wheel and tarball
-git tag v0.1.0               # Tag the release
-git push origin v0.1.0       # Push tag to GitHub
+# Manual process:
+make release                 # Build wheel and get instructions
+# Then follow the displayed steps
 
-# Then create GitHub release and upload dist/* files
+# Or step-by-step:
+make build                   # Creates dist/ with wheel and tarball
+git tag v0.1.0              # Tag the release
+gh release create v0.1.0 dist/* --title "Release v0.1.0"
 ```
+
+**Requirements for automated releases:**
+- Install GitHub CLI: `brew install gh` (or equivalent for your OS)
+- Authenticate: `gh auth login`
 
 Users can then install directly from the release:
 ```bash
