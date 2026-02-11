@@ -54,20 +54,31 @@ class TSVParser:
             IndexDimensionError: If index dimensions exceed data dimensions
         """
         try:
-            # Read the raw file with pandas
-            # First, determine the maximum number of columns
-            with open(input_file, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-                max_cols = max(len(line.rstrip('\n').split(self.separator)) for line in lines if line.strip())
+            # Handle separator auto-detection for pandas
+            if self.separator is None:
+                # Let pandas auto-detect separator - don't specify max_cols
+                df = pd.read_csv(
+                    input_file,
+                    sep=None,
+                    engine='python',  # Required for sep=None
+                    header=None,
+                    keep_default_na=False,
+                    dtype=str
+                )
+            else:
+                # For explicit separator, determine max columns first
+                with open(input_file, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                    max_cols = max(len(line.rstrip('\n').split(self.separator)) for line in lines if line.strip())
 
-            df = pd.read_csv(
-                input_file,
-                sep=self.separator,
-                header=None,  # We'll handle headers manually
-                keep_default_na=False,  # Preserve empty strings
-                dtype=str,  # Keep everything as strings initially
-                names=list(range(max_cols))  # Use column indices as names
-            )
+                df = pd.read_csv(
+                    input_file,
+                    sep=self.separator,
+                    header=None,
+                    keep_default_na=False,
+                    dtype=str,
+                    names=list(range(max_cols))
+                )
 
             if self.verbose:
                 print(f"Read {len(df)} rows × {len(df.columns)} columns")
@@ -155,13 +166,21 @@ class TSVParser:
                 result.append({row_name: row_data})
 
         elif self.row_index_dims == 2:
-            # r=2: Two-level row hierarchy
+            # r=2: Two-level row hierarchy with fill-forward logic
             groups = {}
+            current_level1 = None
+
             for i, (level1, level2) in enumerate(zip(row_headers[0], row_headers[1])):
-                if level1 not in groups:
-                    groups[level1] = {}
-                row_data = self._build_column_data(col_headers, data_rows[i])
-                groups[level1][level2] = row_data
+                # Fill forward: use previous level1 if current is empty
+                if level1.strip():
+                    current_level1 = level1.strip()
+
+                # Only proceed if we have a valid level1
+                if current_level1:
+                    if current_level1 not in groups:
+                        groups[current_level1] = {}
+                    row_data = self._build_column_data(col_headers, data_rows[i])
+                    groups[current_level1][level2] = row_data
 
             for group_name, group_data in groups.items():
                 result.append({group_name: group_data})
@@ -176,47 +195,77 @@ class TSVParser:
 
         elif self.col_index_dims == 2:
             # c=2: Two-level column hierarchy
-            # Need to reconstruct proper level1 headers by looking at original headers
-            full_level1_headers = self._original_df.iloc[0].fillna('').tolist()
-            level2_headers = col_headers[1]  # Already extracted correctly
+            level1_headers = col_headers[0]  # Top level headers
+            level2_headers = col_headers[1]  # Bottom level headers
 
-            result = {}
-            current_level1 = None
+            # Check if this is a "flattened" ZAMP-style matrix case
+            # Only flatten if we have clear ZAMP-style patterns: company/tool names as level2 headers
 
-            # First, build a mapping of which level1 header each data column belongs to
-            level1_mapping = []
+            zamp_style_indicators = []
+            for h in level2_headers:
+                if h.strip():
+                    # Very specific ZAMP patterns
+                    is_known_tool = h.strip() in [
+                        'AWS SageMaker', 'Databricks', 'ZenML', 'ClearML', 'Booking.com',
+                        'ASOS', 'AWS', 'SageMaker', 'MLflow', 'Weights & Biases'
+                    ]
+                    has_company_domain = '.com' in h.lower()
+                    has_tech_acronym = any(word.isupper() and len(word) >= 2
+                                          for word in h.replace('.', ' ').split())
 
-            for data_col_idx in range(len(level2_headers)):
-                # Map back to original column index
-                orig_col_idx = data_col_idx + self.row_index_dims
+                    zamp_style_indicators.append(is_known_tool or has_company_domain or has_tech_acronym)
 
-                # Find the appropriate level1 header by looking backwards from this position
-                level1_header = None
-                for j in range(orig_col_idx, -1, -1):
-                    if j < len(full_level1_headers) and full_level1_headers[j].strip():
-                        level1_header = full_level1_headers[j]
-                        break
+            is_zamp_style = (
+                len(zamp_style_indicators) >= 3 and  # Need at least 3 entries
+                sum(zamp_style_indicators) >= len(zamp_style_indicators) * 0.7  # At least 70% look like tools/companies
+            )
 
-                level1_mapping.append(level1_header)
+            if is_zamp_style:
+                # Use flat structure with level2 headers as keys
+                result = {}
+                for level2_header, value in zip(level2_headers, data_row):
+                    if level2_header.strip():  # Only use non-empty headers
+                        result[level2_header] = value
+                return result
 
-            if self.verbose:
-                print(f"Level1 mapping: {level1_mapping}")
-                print(f"Level2 headers: {level2_headers}")
+            else:
+                # Use hierarchical structure - original logic
+                full_level1_headers = self._original_df.iloc[0].fillna('').tolist()
+                result = {}
 
-            # Now process each data column
-            for i, (level2_header, value) in enumerate(zip(level2_headers, data_row)):
-                # Get the level1 header for this column
-                level1_header = level1_mapping[i] if i < len(level1_mapping) else None
+                # First, build a mapping of which level1 header each data column belongs to
+                level1_mapping = []
+                for data_col_idx in range(len(level2_headers)):
+                    # Map back to original column index
+                    orig_col_idx = data_col_idx + self.row_index_dims
 
-                # Initialize the level1 group if not exists
-                if level1_header and level1_header not in result:
-                    result[level1_header] = {}
+                    # Find the appropriate level1 header by looking backwards from this position
+                    level1_header = None
+                    for j in range(orig_col_idx, -1, -1):
+                        if j < len(full_level1_headers) and full_level1_headers[j].strip():
+                            level1_header = full_level1_headers[j]
+                            break
 
-                # Add the data to the appropriate group
-                if level1_header and level2_header.strip():
-                    result[level1_header][level2_header] = value
+                    level1_mapping.append(level1_header)
 
-            return result
+                if self.verbose:
+                    print(f"Level1 mapping: {level1_mapping}")
+                    print(f"Level2 headers: {level2_headers}")
+
+                # Now process each data column
+                for i, (level2_header, value) in enumerate(zip(level2_headers, data_row)):
+                    # Get the level1 header for this column
+                    level1_header = level1_mapping[i] if i < len(level1_mapping) else None
+
+                    # Initialize the level1 group if not exists
+                    if level1_header and level1_header not in result:
+                        result[level1_header] = {}
+
+                    # Add the data to the appropriate group
+                    if level1_header and level2_header.strip():
+                        result[level1_header][level2_header] = value
+
+                return result
 
         # For higher dimensions, use generic approach
         return dict(zip(col_headers[-1], data_row))
