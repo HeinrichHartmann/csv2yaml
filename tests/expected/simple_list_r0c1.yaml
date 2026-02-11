@@ -1,0 +1,23 @@
+meta:
+  source_file: simple_list_r0c1.tsv
+  dimensions:
+    total_rows: 4
+    total_cols: 3
+    col_index_dims: 1
+    row_index_dims: 0
+    data_rows: 3
+    data_cols: 3
+
+data:
+  - row[1]:
+      Name: Alice
+      Age: 25
+      City: NYC
+  - row[2]:
+      Name: Bob
+      Age: 30
+      City: LA
+  - row[3]:
+      Name: Carol
+      Age: 35
+      City: SF

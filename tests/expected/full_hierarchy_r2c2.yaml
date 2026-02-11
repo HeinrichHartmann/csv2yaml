@@ -1,0 +1,45 @@
+meta:
+  source_file: full_hierarchy_r2c2.tsv
+  dimensions:
+    total_rows: 5
+    total_cols: 7
+    col_index_dims: 2
+    row_index_dims: 2
+    data_rows: 4
+    data_cols: 5
+
+data:
+  - Alpha:
+      Alice:
+        Personal:
+          Age: 25
+          City: NYC
+        Work:
+          Company: Acme
+          Role: Engineer
+          Salary: 75000
+      Bob:
+        Personal:
+          Age: 30
+          City: LA
+        Work:
+          Company: Beta
+          Role: Designer
+          Salary: 70000
+  - Beta:
+      Carol:
+        Personal:
+          Age: 35
+          City: SF
+        Work:
+          Company: Gamma
+          Role: Manager
+          Salary: 90000
+      David:
+        Personal:
+          Age: 28
+          City: Seattle
+        Work:
+          Company: Delta
+          Role: Developer
+          Salary: 80000

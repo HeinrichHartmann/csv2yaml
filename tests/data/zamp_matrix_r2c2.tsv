@@ -1,0 +1,6 @@
+Categories	Component Types	Zalando Examples	Competitor Stacks		Cloud Provider Stacks	Vendor Stacks
+			Booking.com	ASOS	AWS SageMaker	Databricks	ZenML	ClearML
+1. Data Management	Data Sources	Kafka, BigQuery	Internal APIs	Azure Data Lake	S3	Unity Catalog	⚪ External integrations	🟢 Built-in connectors
+	Feature Stores	Hopsworks	Feature Store	Cosmos DB	SageMaker FS	Feature Store	⚪ Feast/Tecton	🟢 Built-in store
+2. Experimentation	ML Development	Jupyter Notebooks	SageMaker Studio	Azure ML Studio	SageMaker Studio	DBX Notebooks	🟢 Python SDK	🟢 Web UI + SDK
+	Experiment Tracking	Weights & Biases	SageMaker Experiments	Azure ML Experiments	SageMaker Experiments	MLflow	🟢 MLflow integration	🟢 Built-in

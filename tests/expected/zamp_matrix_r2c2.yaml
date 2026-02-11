@@ -1,0 +1,41 @@
+meta:
+  source_file: zamp_matrix_r2c2.tsv
+  dimensions:
+    total_rows: 5
+    total_cols: 9
+    col_index_dims: 2
+    row_index_dims: 2
+    data_rows: 4
+    data_cols: 7
+
+data:
+  - "1. Data Management":
+      "Data Sources":
+        "Booking.com": "Internal APIs"
+        "ASOS": "Azure Data Lake"
+        "AWS SageMaker": "S3"
+        "Databricks": "Unity Catalog"
+        "ZenML": "⚪ External integrations"
+        "ClearML": "🟢 Built-in connectors"
+      "Feature Stores":
+        "Booking.com": "Feature Store"
+        "ASOS": "Cosmos DB"
+        "AWS SageMaker": "SageMaker FS"
+        "Databricks": "Feature Store"
+        "ZenML": "⚪ Feast/Tecton"
+        "ClearML": "🟢 Built-in store"
+  - "2. Experimentation":
+      "ML Development":
+        "Booking.com": "SageMaker Studio"
+        "ASOS": "Azure ML Studio"
+        "AWS SageMaker": "SageMaker Studio"
+        "Databricks": "DBX Notebooks"
+        "ZenML": "🟢 Python SDK"
+        "ClearML": "🟢 Web UI + SDK"
+      "Experiment Tracking":
+        "Booking.com": "SageMaker Experiments"
+        "ASOS": "Azure ML Experiments"
+        "AWS SageMaker": "SageMaker Experiments"
+        "Databricks": "MLflow"
+        "ZenML": "🟢 MLflow integration"
+        "ClearML": "🟢 Built-in"

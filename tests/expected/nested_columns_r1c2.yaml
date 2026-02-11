@@ -1,0 +1,35 @@
+meta:
+  source_file: nested_columns_r1c2.tsv
+  dimensions:
+    total_rows: 4
+    total_cols: 6
+    col_index_dims: 2
+    row_index_dims: 1
+    data_rows: 3
+    data_cols: 5
+
+data:
+  - Alice:
+      Personal:
+        Age: 25
+        City: NYC
+      Work:
+        Company: Acme
+        Role: Engineer
+        Salary: 75000
+  - Bob:
+      Personal:
+        Age: 30
+        City: LA
+      Work:
+        Company: Beta
+        Role: Designer
+        Salary: 70000
+  - Carol:
+      Personal:
+        Age: 35
+        City: SF
+      Work:
+        Company: Gamma
+        Role: Manager
+        Salary: 90000
