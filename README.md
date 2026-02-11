@@ -14,17 +14,27 @@ Perfect for:
 
 ## Installation
 
+### From GitHub Releases (Recommended)
 ```bash
-# Install globally from GitHub with uv
+# Install latest release wheel
+uv tool install https://github.com/HeinrichHartmann/csv2yaml/releases/latest/download/csv2yaml-0.1.0-py3-none-any.whl
+```
+
+### From Source
+```bash
+# Install from GitHub source
 uv tool install git+https://github.com/HeinrichHartmann/csv2yaml.git
 
-# Or install in project
-uv add git+https://github.com/HeinrichHartmann/csv2yaml.git
-
-# Alternative: Clone and install locally
+# Or clone and install locally
 git clone https://github.com/HeinrichHartmann/csv2yaml.git
 cd csv2yaml
-uv tool install .
+make install
+```
+
+### From PyPI (when published)
+```bash
+# Will be available after PyPI publication
+uv tool install csv2yaml
 ```
 
 ## Quick Start
@@ -137,10 +147,29 @@ cd csv2yaml
 uv sync --dev
 
 # Run tests
-uv run pytest
+make test
 
 # Install locally
-uv tool install .
+make install
+```
+
+### Publishing Releases
+
+```bash
+# Build wheel and get release instructions
+make release
+
+# Or manually:
+make build                    # Creates dist/ with wheel and tarball
+git tag v0.1.0               # Tag the release
+git push origin v0.1.0       # Push tag to GitHub
+
+# Then create GitHub release and upload dist/* files
+```
+
+Users can then install directly from the release:
+```bash
+uv tool install https://github.com/HeinrichHartmann/csv2yaml/releases/download/v0.1.0/csv2yaml-0.1.0-py3-none-any.whl
 ```
 
 ## License

@@ -1,6 +1,6 @@
 # csv2yaml project Makefile
 
-.PHONY: help clean install test publish
+.PHONY: help clean install test build publish release
 
 help:				## Show this help message
 	@echo "csv2yaml - Universal TSV/CSV to YAML converter"
@@ -20,6 +20,22 @@ install:			## Install package locally
 test:				## Run test suite
 	uv run pytest
 
+build:				## Build wheel and tarball
+	uv build
+
 publish:			## Publish package to PyPI
 	uv build
 	uv publish
+
+release:			## Build package for GitHub release
+	uv build
+	@echo "Built package files:"
+	@ls -la dist/
+	@echo ""
+	@echo "To create GitHub release:"
+	@echo "1. git tag v0.1.0"
+	@echo "2. git push origin v0.1.0"
+	@echo "3. Create release on GitHub and upload files from dist/"
+	@echo ""
+	@echo "Users can then install with:"
+	@echo "uv tool install https://github.com/HeinrichHartmann/csv2yaml/releases/download/v0.1.0/csv2yaml-0.1.0-py3-none-any.whl"
